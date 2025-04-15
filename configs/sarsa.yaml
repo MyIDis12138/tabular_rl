@@ -1,0 +1,20 @@
+imports:
+  - custom_env.yaml
+
+experiment:
+  name: "sarsa_ref_custom_grid_5x6"
+  seed: 42
+  total_episodes: 10000
+  max_steps_per_episode: 150
+  eval_episodes: 100
+  results_dir: "results"
+
+algorithm:
+  class_path: 'algorithms.sarsa.SarsaAgent'
+  save_model_filename: "sarsa_custom_grid_ref_final.pkl"
+  hyperparameters: 
+    gamma: 0.99
+    alpha: 0.1
+    epsilon_start: 1.0
+    epsilon_min: 0.05
+    epsilon_decay: 0.9995

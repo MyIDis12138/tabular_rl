@@ -1,0 +1,15 @@
+environment:
+  class_path: 'envs.custom_grid_world.CustomGridWorld'
+  params:
+    rows: 5
+    cols: 6            # Changed size slightly for variety
+    start_coords: [0, 0]
+    goal_coords: [4, 5]
+    hole_coords: [[1,1], [2,3], [3,1], [4, 3]] # Adjusted holes for 5x6
+    is_slippery: false   # Set to true for stochastic transitions
+    max_step_size: 1     # Single step actions suitable for basic tabular
+    reward_map:
+      goal: 1.0
+      hole: -1.0
+      step: -0.01
+    # render_mode: null # Keep null unless debugging

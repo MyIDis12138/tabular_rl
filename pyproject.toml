@@ -1,0 +1,7 @@
+[project]
+name = "minirl"
+version = "0.1.0"
+description = "Tabular rl with custom grid world."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []

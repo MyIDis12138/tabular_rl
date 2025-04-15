@@ -1,0 +1,18 @@
+imports:
+  - custom_env.yaml
+
+experiment:
+  name: "actorcritic_ref_custom_grid_5x6"
+  seed: 42
+  total_episodes: 15000
+  max_steps_per_episode: 150
+  eval_episodes: 100
+  results_dir: "results"
+
+algorithm:
+  class_path: 'algorithms.actor_critic.ActorCriticAgent'
+  save_model_filename: "actorcritic_custom_grid_ref_final.pkl"
+  hyperparameters: 
+    gamma: 0.99 
+    alpha_actor: 0.01
+    alpha_critic: 0.1
