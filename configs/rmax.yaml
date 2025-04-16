@@ -2,7 +2,7 @@ imports:
   - custom_env.yaml
 
 experiment:
-  name: "qlearn_custom_grid_5x5_ms1"
+  name: "rmax_custom_grid_5x6"
   seed: 42
   total_episodes: 10000
   max_steps_per_episode: 100
@@ -14,7 +14,8 @@ algorithm:
   save_model_filename: "rmax_custom_grid_final.pkl"
   hyperparameters:
     gamma: 0.99
-    alpha: 0.1
-    epsilon_start: 1.0
-    epsilon_min: 0.05
-    epsilon_decay: 0.999
+    m: 10  # Confidence threshold for known state-actions
+    R_max: 1.0  # Optimistic reward for unknown state-actions
+    planning_iterations: 50
+    planning_tolerance: 1e-3
+    # Environment details handled by run.py

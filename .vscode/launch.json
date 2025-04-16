@@ -11,7 +11,10 @@
             "program": "${workspaceFolder}/run.py",
             "args": [
                 "--config",
-                "${workspaceFolder}/configs/qlearning.yaml"
+                // "${workspaceFolder}/configs/actor_critic.yaml"
+                // "${workspaceFolder}/configs/rmax.yaml"
+                // "${workspaceFolder}/configs/qlearning.yaml"
+                "${workspaceFolder}/configs/sarsa.yaml"
             ],
             "console": "integratedTerminal"
         }

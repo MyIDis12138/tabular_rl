@@ -30,7 +30,7 @@ def create_environment(env_config, seed):
 
     try:
         if env_class_path:
-            print(f"Attempting to create custom environment: {env_class_path}")
+            print(f"Creating custom environment: {env_class_path}")
             EnvClass = load_class(env_class_path)
             env = EnvClass(**env_params)
             print(f"Custom environment '{type(env).__name__}' created.")
@@ -40,7 +40,7 @@ def create_environment(env_config, seed):
             else:
                  print(f"Warning: Custom environment does not have 'terminal_states' attribute.")
         elif env_id:
-            print(f"Attempting to create Gym environment: {env_id}")
+            print(f"Creating Gym environment: {env_id}")
             env = gym.make(env_id, **env_params)
             print(f"Gym environment '{env_id}' created.")
             if 'FrozenLake' in env_id:
@@ -87,7 +87,15 @@ def create_agent(algo_config, env, terminal_states):
 
     try:
         AgentClass = load_class(agent_class_path)
-        agent = AgentClass(env=env, terminal_states=terminal_states, **algo_params)
+        
+        # Initialize agent with env and terminal_states
+        # The new BaseAgent architecture handles state/action extraction from env
+        agent = AgentClass(
+            env=env, 
+            terminal_states=terminal_states, 
+            **algo_params
+        )
+        
         print(f"Initialized Agent: {AgentClass.__name__}")
         print(f"  with Hyperparameters: {algo_params}")
         return agent
@@ -111,7 +119,7 @@ def setup_results_dir(config, config_path):
          print(f"Warning: Could not create results directory {run_dir} or save config: {e}")
          return Path(".") # Fallback
 
-def run_training(agent, train_config, run_dir):
+def run_training(agent, train_config, env, run_dir):
     """Runs the agent's training loop and saves stats."""
     print("\n--- Starting Training ---")
     try:
@@ -119,10 +127,13 @@ def run_training(agent, train_config, run_dir):
         max_steps = train_config.get('max_steps_per_episode', 200) # Default
         print(f"Training for {total_episodes} episodes (max {max_steps} steps/ep)...")
 
-        if not hasattr(agent, 'train'):
-             raise AttributeError("Agent object does not have a 'train' method.")
-
-        train_stats = agent.train(total_episodes=total_episodes, max_steps_per_episode=max_steps)
+        # Use the standardized train method from BaseAgent
+        train_stats = agent.train(
+            total_episodes=total_episodes, 
+            max_steps_per_episode=max_steps,
+            env=env
+        )
+        
         print("Training finished successfully.")
 
         # Save training stats if returned
@@ -171,20 +182,29 @@ def run_evaluation(agent, eval_config, env, run_dir):
 
     print(f"Evaluating for {eval_episodes} episodes (max {eval_max_steps} steps/ep)...")
     for i in range(eval_episodes):
-        state, info = env.reset() # Use seeded reset if possible
+        obs_result = env.reset() # Use seeded reset if possible
+        if isinstance(obs_result, tuple):  # Gym v26+ returns (obs, info)
+            state, info = obs_result
+        else:  # Backwards compatibility
+            state = obs_result
+            info = {}
+            
         episode_reward = 0
         done = False
         steps = 0
         for step in range(eval_max_steps):
-            try: # Use evaluate=True flag if available
-                action = agent.choose_action(state, evaluate=True)
-            except TypeError:
-                action = agent.choose_action(state)
+            # Use evaluate=True to get greedy policy
+            action = agent.choose_action(state, evaluate=True)
             if action is None: break
 
             try:
-                next_state, reward, terminated, truncated, info = env.step(action)
-                done = terminated or truncated
+                result = env.step(action)
+                if len(result) == 5:  # Gym v26+ returns (obs, reward, terminated, truncated, info)
+                    next_state, reward, terminated, truncated, info = result
+                    done = terminated or truncated
+                else:  # Backwards compatibility
+                    next_state, reward, done, info = result
+                    
                 episode_reward += reward
                 state = next_state
                 steps = step + 1
@@ -246,7 +266,7 @@ def main():
         run_dir = setup_results_dir(config, config_path)
 
         # 5. Training
-        training_successful = run_training(agent, config.get('experiment', {}), run_dir)
+        training_successful = run_training(agent, config.get('experiment', {}), env, run_dir)
 
         # 6. Save Agent State (if training succeeded)
         if training_successful:
@@ -258,7 +278,7 @@ def main():
     except (FileNotFoundError, ValueError, ImportError, AttributeError, KeyError, Exception) as e:
         # Catch specific expected errors and general exceptions
         print(f"\n!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(f"ERROR: An critical error occurred: {e}")
+        print(f"ERROR: A critical error occurred: {e}")
         print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         # Print traceback for unexpected errors
         if not isinstance(e, (FileNotFoundError, ValueError, ImportError, AttributeError, KeyError)):
