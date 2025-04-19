@@ -13,8 +13,8 @@
                 "--config",
                 // "${workspaceFolder}/configs/actor_critic.yaml"
                 // "${workspaceFolder}/configs/rmax.yaml"
-                // "${workspaceFolder}/configs/qlearning.yaml"
-                "${workspaceFolder}/configs/sarsa.yaml"
+                "${workspaceFolder}/configs/qlearning.yaml"
+                // "${workspaceFolder}/configs/sarsa.yaml"
             ],
             "console": "integratedTerminal"
         }
