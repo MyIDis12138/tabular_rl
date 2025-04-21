@@ -8,14 +8,14 @@ environment:
       ".#####.G#.",
       "...H...#.."
     ]
-    action_failure_prob: 0.0
+    action_failure_prob: 0.2
     action_failure_outcomes:
-      S: 0.5
-      L: 0.2
-      R: 0.2
+      S: 0.7
+      L: 0.1
+      R: 0.1
       B: 0.1
     is_slippery: false   # Set to true for stochastic transitions
-    max_step_size: 3     # Single step actions suitable for basic tabular
+    max_step_size: 2     # Single step actions suitable for basic tabular
     reward_map:
       goal: 1.0
       hole: -1.0

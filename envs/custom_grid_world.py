@@ -31,11 +31,16 @@ class CustomGridWorld(gym.Env):
         'EMPTY': '.'
     }
 
-    def __init__(self, map_layout=None, # Primary: Init from map
-                 rows=None, cols=None, # Secondary: Specify dims if no map
-                 start_coords=None, goal_coords=None, # Specify coords if no map
-                 hole_coords=None, wall_coords=None,  # Specify obstacles if no map
-                 reward_map=None, is_slippery=False,
+    def __init__(self, 
+                 map_layout=None,
+                 rows=None, 
+                 cols=None,
+                 start_coords=None, 
+                 goal_coords=None,
+                 hole_coords=None, 
+                 wall_coords=None,
+                 reward_map=None, 
+                 is_slippery=False,
                  action_failure_prob=0.0,
                  action_failure_outcomes=None,
                  max_step_size=1,
@@ -253,8 +258,7 @@ class CustomGridWorld(gym.Env):
         if not (0 <= flat_action < self.action_space.n):
              raise ValueError(f"Invalid flat_action: {flat_action}. Must be 0 <= action < {self.action_space.n}")
         direction = flat_action % self.num_directions
-        step_size_index = flat_action // self.num_directions
-        step_size = step_size_index + 1 # Map 0..max-1 to 1..max
+        step_size = flat_action // self.num_directions + 1
         return direction, step_size
 
     def _get_relative_delta(self, intended_direction, relative_outcome):
@@ -335,19 +339,17 @@ class CustomGridWorld(gym.Env):
             current_coords = next_coords
             current_state_idx = self._coords_to_state[current_coords]
 
-            # 6. Check Terminal State (Goal/Hole)
-            step_reward = self.reward_map['step']
-            if current_state_idx == self.goal_state:
-                final_reward = self.reward_map['goal']
-                terminated = True
-                break
-            elif current_state_idx in self.hole_states:
-                final_reward = self.reward_map['hole']
-                terminated = True
-                break
-            else:
-                # Overwrite with step cost for this non-terminal step
-                final_reward = step_reward
+        # 6. Check Terminal State (Goal/Hole)
+        step_reward = self.reward_map['step']
+        if current_state_idx == self.goal_state:
+            final_reward = self.reward_map['goal']
+            terminated = True
+        elif current_state_idx in self.hole_states:
+            final_reward = self.reward_map['hole']
+            terminated = True
+        else:
+            # Overwrite with step cost for this non-terminal step
+            final_reward = step_reward
 
         # End of multi-step loop
         self._agent_coords = current_coords

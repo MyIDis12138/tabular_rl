@@ -14,8 +14,8 @@ class RMaxAgent(BaseAgent):
             actions=None, 
             terminal_states=None, 
             gamma=0.99, 
-            m=10,  # Threshold for known state-actions
-            R_max=1.0,  # Optimistic reward for unknown state-actions
+            m=10,
+            R_max=1.0,
             planning_iterations=50,
             planning_tolerance=1e-3,
             **kwargs
@@ -105,9 +105,9 @@ class RMaxAgent(BaseAgent):
             self.T[sa_pair] = current_sas_probs
             self.known_sa.add(sa_pair)
             
-            return True  # Model was updated
+            return True
             
-        return False  # Model unchanged
+        return False
 
     def plan(self):
         """ Run value iteration on the current model """
@@ -213,11 +213,10 @@ class RMaxAgent(BaseAgent):
             raise ValueError("RMax agent needs environment functions passed to learn_episode")
         
         current_state = env_reset_func()
-        needs_planning = True  # Plan at the start of each episode
+        needs_planning = True
         total_reward = 0
         steps = 0
         
-        # Initial planning if needed
         if needs_planning:
             self.plan()
             needs_planning = False
