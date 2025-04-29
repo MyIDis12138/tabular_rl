@@ -1,0 +1,26 @@
+# configs/env_hard.yaml
+environment:
+  class_path: 'envs.custom_grid_world.CustomGridWorld'
+  params:
+    # render_mode: graphical
+    map_layout: [
+      "A...#.....",
+      ".##..H.#..",
+      "H.#...#.H.",
+      ".#.#H##...",
+      ".##..#GH#H",
+      "....#....."
+    ]
+    action_failure_prob: 0.3
+    action_failure_outcomes:
+      S: 0.5
+      L: 0.2
+      R: 0.2
+      B: 0.1
+    apply_noise: True
+    noise_stddev: 0.3
+    max_step_size: 3
+    reward_map:
+      goal: 1.0
+      hole: -1.0
+      step: -0.01

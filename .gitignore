@@ -12,3 +12,4 @@ wheels/
 .venv
 
 results/
+results_benchmark_multi_env

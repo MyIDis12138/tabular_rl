@@ -4,7 +4,7 @@ imports:
 experiment:
   name: "actorcritic_custom_grid_5x6"
   seed: 42
-  total_episodes: 15000
+  total_episodes: 20000
   max_steps_per_episode: 150
   eval_episodes: 100
   results_dir: "results"
